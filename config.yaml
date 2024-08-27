@@ -30,7 +30,7 @@ plugins:
     type: domain_set
     args:
       files:
-        - "./rule/domains.txt"
+        - "./rule/anti-ad-domains.txt"
   - tag: adList
     type: domain_set
     args:
