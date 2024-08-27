@@ -22,10 +22,10 @@ download() {
 }
 
 # Iterate over each URL in the list
-# Iterate over each URL in the list
 echo "$URLS" | while IFS= read -r url; do
     # Skip empty lines
     [ -z "$url" ] && continue
+    echo "$url"
     download "$url"
 done
 
