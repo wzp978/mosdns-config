@@ -1,31 +1,9 @@
 #!/bin/sh
-path="./rule"
+rm -rf ./rule
+mkdir -p ./rule
 
-rm -rf $path
-# 创建 rule 文件夹
-mkdir -p $path
-# List of URLs
-URLS="
-https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-domains.txt
-https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
-https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Mosdns_v5.txt
-"
-
-# Function to download file from URL
-download() {
-    url="$1"
-    # Extract filename from URL
-    filename=$(basename "$url")
-    # Download using curl
-    curl --connect-timeout 5 -m 120 --ipv4 -kfSLo "$path/$filename" "$url"
-}
-
-# Iterate over each URL in the list
-echo "$URLS" | while IFS= read -r url; do
-    # Skip empty lines
-    [ -z "$url" ] && continue
-    echo "$url"
-    download "$url"
-done
-
-./v2dat unpack geosite -o ./rule -f cn -f apple -f microsoft -f 'geolocation-!cn' -f category-ads-all "$path/geosite.dat"
+curl https://gcore.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Mosdns_v5.txt > ./rule/awa-ad.txt
+curl https://gcore.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/anti-ad-domains.txt > ./rule/anti-ad.txt
+curl https://gcore.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/reject-list.txt > ./rule/ad.txt
+curl https://gcore.jsdelivr.net/gh/Hackl0us/GeoIP2-CN@release/CN-ip-cidr.txt > ./rule/geoip.txt
+echo 'update finished'

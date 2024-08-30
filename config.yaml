@@ -1,46 +1,31 @@
 log:
   # "debug" "info" "warn" "error"
   level: "error"
-  file: "./mosdns.log"
+  file: "/var/log/mosdns.log"
 api:
   http: 0.0.0.0:9091
 include: []
 plugins:
-  - tag: msList
-    type: domain_set
-    args:
-      files:
-        - "./rule/geosite_microsoft.txt"
-  - tag: cnList
-    type: domain_set
-    args:
-      files:
-        - "./rule/geosite_cn.txt"
-  - tag: appleList
-    type: domain_set
-    args:
-      files:
-        - "./rule/geosite_apple.txt"
-  - tag: proxyList
-    type: domain_set
-    args:
-      files:
-        - "./rule/geosite_geolocation-!cn.txt"
   - tag: antiAd
     type: domain_set
     args:
       files:
-        - "./rule/anti-ad-domains.txt"
-  - tag: adList
+        - "./rule/anti-ad.txt"
+  - tag: ad
     type: domain_set
     args:
       files:
-        - "./rule/geosite_category-ads-all.txt"
-  - tag: awaList
+        - "./rule/ad.txt"
+  - tag: awaAd
     type: domain_set
     args:
       files:
-        - "./rule/AWAvenue-Ads-Rule-Mosdns_v5.txt"
+        - "./rule/awa-ad.txt"
+  - tag: cnip
+    type: ip_set
+    args:
+      files:
+        - "./rule/geoip.txt"
 
   - tag: hosts
     type: hosts
@@ -87,19 +72,34 @@ plugins:
       threshold: 500
       always_standby: true
 
-  - tag: forward_remote
+  - tag: cf_dns
     type: forward
     args:
-      concurrent: 3
+      concurrent: 2
       upstreams:
-        - tag: cloudflare_doh
+        - tag: cf_doh
           addr: https://1.1.1.1/dns-query
-        - tag: cloudflare_dot
+        - tag: cf_dot
           addr: tls://1.1.1.1
           enable_pipeline: true
+  - tag: open_dns
+    type: forward
+    args:
+      concurrent: 2
+      upstreams:
+        - tag: open_doh
+          addr: https://208.67.222.222/dns-query
         - tag: opendns_dot
           addr: tls://208.67.222.222
           enable_pipeline: true
+
+  - tag: forward_remote
+    type: fallback
+    args:
+      primary: cf_dns
+      secondary: open_dns
+      threshold: 700
+      always_standby: true
 
   - tag: accept_resp
     type: sequence
@@ -110,24 +110,25 @@ plugins:
   - tag: reject_resp
     type: sequence
     args:
-      - matches: "!has_resp"
-        exec: reject 5
+      # - matches: "has_resp"
+      #   exec: return
+      - exec: "query_summary no resp"
+      - exec: reject 5
 
   - tag: local_seq
     type: sequence
     args:
-      - matches: "!qname $appleList $msList $cnList"
-        exec: return
       - exec: "query_summary local dns"
       - exec: "$forward_local"
-      - exec: jump accept_resp
-      - exec: jump reject_resp
+      - matches: "!has_resp"
+        exec: return
+      - matches: "!resp_ip $cnip"
+        exec: return
+      - exec: accept
 
   - tag: remote_seq
     type: sequence
     args:
-      - matches: "!qname $proxyList"
-        exec: return
       - exec: "query_summary remote dns"
       - exec: "$forward_remote"
       - exec: jump accept_resp
@@ -138,20 +139,12 @@ plugins:
     args:
       - matches: "qtype 12 65"
         exec: mark 1
-      - matches: "qname $antiAd $adList $awaList"
+      - matches: "qname $antiAd $ad $awaAd"
         exec: mark 1
       - matches: "!mark 1"
         exec: return
       - exec: "query_summary block dns"
       - exec: reject 3
-
-  - tag: fallback_seq
-    type: sequence
-    args:
-      - exec: "query_summary fallback_seq"
-      - exec: "$forward_local"
-      - exec: jump accept_resp
-      - exec: jump reject_resp
 
   - tag: main_sequence
     type: sequence
@@ -163,8 +156,7 @@ plugins:
       - exec: jump block_seq
       - exec: prefer_ipv4
       - exec: jump local_seq
-      - exec: jump remote_seq
-      - exec: goto fallback_seq
+      - exec: goto remote_seq
   - tag: udp_server
     type: udp_server
     args:
