@@ -1,0 +1,65 @@
+plugins:
+  - tag: antiAd
+    type: domain_set
+    args:
+      files:
+        - "./rule/anti-ad.txt"
+  - tag: ad
+    type: domain_set
+    args:
+      files:
+        - "./rule/ad.txt"
+  - tag: awaAd
+    type: domain_set
+    args:
+      files:
+        - "./rule/awa-ad.txt"
+  - tag: cnip
+    type: ip_set
+    args:
+      files:
+        - "./rule/geoip.txt"
+  - tag: direct-list
+    type: domain_set
+    args:
+      files:
+        - "./rule/direct-list.txt"
+  - tag: china-list
+    type: domain_set
+    args:
+      files:
+        - "./rule/china-list.txt"
+  - tag: apple-cn
+    type: domain_set
+    args:
+      files:
+        - "./rule/apple-cn.txt"
+  - tag: gfw
+    type: domain_set
+    args:
+      files:
+        - "./rule/gfw.txt"
+  - tag: proxy-list
+    type: domain_set
+    args:
+      files:
+        - "./rule/proxy-list.txt"
+  - tag: "lanip"
+    type: "ip_set"
+    args:
+      ips: # 可以是 IP 或 CIDR。
+        # - "1.1.1.1"
+        - "10.0.0.0/8"
+        - "100.64.0.0/10"
+        - "127.0.0.0/8"
+        - "169.254.0.0/16"
+        - "172.16.0.0/12"
+        - "192.0.0.0/24"
+        - "192.0.2.0/24"
+        - "192.88.99.0/24"
+        - "192.168.0.0/16"
+        - "198.18.0.0/15"
+        - "198.51.100.0/24"
+        - "203.0.113.0/24"
+        - "224.0.0.0/3"
+        - "::/127"
