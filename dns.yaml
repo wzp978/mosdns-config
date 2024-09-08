@@ -40,26 +40,12 @@ plugins:
         - tag: open_dot_bak
           addr: tls://208.67.220.220
           enable_pipeline: true
-        - tag: cf_doh
-          addr: https://cloudflare-dns.com/dns-query
-          dial_addr: 104.16.248.249
-        # - tag: cf_doh_h3
-        #   addr: https://1.1.1.1/dns-query
-        #   enable_http3: true
-        # - tag: cf_dot
-        #   addr: tls://cloudflare-dns.com
-        #   dial_addr: 104.16.248.249
-        #   enable_pipeline: true
-        - tag: cf_doh_bak
-          addr: https://cloudflare-dns.com/dns-query
-          dial_addr: 104.16.249.249
-        # - tag: cf_doh_h3_bak
-        #   addr: https://1.0.0.1/dns-query
-        #   enable_http3: true
-        # - tag: cf_dot_bak
-        #   addr: tls://cloudflare-dns.com
-        #   dial_addr: 104.16.249.249
-        #   enable_pipeline: true
+        - tag: quad_doh
+          addr: https://dns.quad9.net/dns-query
+          dial_addr: 9.9.9.9
+        - tag: quad_doh_bak
+          addr: https://dns.quad9.net/dns-query
+          dial_addr: 149.112.112.112
 
   - tag: forward_dnsmasq
     type: forward

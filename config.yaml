@@ -1,7 +1,7 @@
 log:
   # "debug" "info" "warn" "error"
   level: "info"
-  file: "./mosdns.log"
+  file: "/tmp/mosdns/mosdns.log"
 api:
   http: 0.0.0.0:9091
 include: ["./data.yaml", "./dns.yaml"]
@@ -16,7 +16,7 @@ plugins:
     args:
       size: 4096
       lazy_cache_ttl: 86400
-      dump_file: ./cache.dump
+      dump_file: "/tmp/mosdns/cache.dump"
       dump_interval: 600
 
   - tag: "local_ecs"
@@ -40,8 +40,26 @@ plugins:
   - tag: modi_ttl
     type: sequence
     args:
-      - matches: "has_resp"
-        exec: ttl 1800
+      - matches: "has_wanted_ans"
+        exec: ttl 1800-0
+
+  - tag: handle_hosts
+    type: sequence
+    args:
+      - exec: "$hosts"
+      - matches: "!has_wanted_ans"
+        exec: return
+      - exec: "query_summary from hosts"
+      - exec: accept
+
+  - tag: handle_cache
+    type: sequence
+    args:
+      - exec: "$lazy_cache"
+      - matches: "!has_wanted_ans"
+        exec: return
+      - exec: "query_summary from cache"
+      - exec: accept
 
   - tag: handle_qtype65
     type: sequence
@@ -49,7 +67,6 @@ plugins:
       - matches: "!qtype 65"
         exec: return
       - exec: "query_summary handle qtype65"
-      # - exec: jump modi_ttl
       - exec: reject 3
 
   - tag: handle_ptr
@@ -137,11 +154,9 @@ plugins:
   - tag: main_sequence
     type: sequence
     args:
-      - exec: "$hosts"
-      - exec: jump accept_resp
+      - exec: jump handle_hosts
       - exec: jump pre_seq
-      - exec: "$lazy_cache"
-      - exec: jump accept_resp
+      - exec: jump handle_cache
       - exec: prefer_ipv4
       - matches: "qname $direct-list $china-list $apple-cn"
         exec: "goto local_seq"
