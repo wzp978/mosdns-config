@@ -1,19 +1,19 @@
 plugins:
-  - tag: antiAd
-    type: domain_set
-    args:
-      files:
-        - "./rule/anti-ad.txt"
-  - tag: ad
-    type: domain_set
-    args:
-      files:
-        - "./rule/ad.txt"
-  - tag: awaAd
-    type: domain_set
-    args:
-      files:
-        - "./rule/awa-ad.txt"
+  # - tag: antiAd
+  #   type: domain_set
+  #   args:
+  #     files:
+  #       - "./rule/anti-ad.txt"
+  # - tag: ad
+  #   type: domain_set
+  #   args:
+  #     files:
+  #       - "./rule/ad.txt"
+  # - tag: awaAd
+  #   type: domain_set
+  #   args:
+  #     files:
+  #       - "./rule/awa-ad.txt"
   - tag: cnip
     type: ip_set
     args:

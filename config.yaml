@@ -1,7 +1,7 @@
 log:
   # "debug" "info" "warn" "error"
-  level: "info"
-  file: "/tmp/mosdns/mosdns.log"
+  level: "error"
+  file: "/var/log/mosdns.log"
 api:
   http: 0.0.0.0:9091
 include: ["./data.yaml", "./dns.yaml"]
@@ -16,7 +16,7 @@ plugins:
     args:
       size: 4096
       lazy_cache_ttl: 86400
-      dump_file: "/tmp/mosdns/cache.dump"
+      dump_file: "./cache.dump"
       dump_interval: 600
 
   - tag: "local_ecs"
@@ -97,13 +97,13 @@ plugins:
       - exec: "query_summary handle null domain"
       - exec: reject 3
 
-  - tag: handle_ad
-    type: sequence
-    args:
-      - matches: "!qname $antiAd $ad $awaAd"
-        exec: return
-      - exec: "query_summary handle ad"
-      - exec: reject 3
+  # - tag: handle_ad
+  #   type: sequence
+  #   args:
+  #     - matches: "!qname $antiAd $ad $awaAd"
+  #       exec: return
+  #     - exec: "query_summary handle ad"
+  #     - exec: reject 3
 
   - tag: pre_seq
     type: sequence
@@ -112,7 +112,7 @@ plugins:
       - exec: jump handle_qtype65
       - exec: jump handle_lan
       - exec: jump handle_ptr
-      - exec: jump handle_ad
+      # - exec: jump handle_ad
 
   - tag: local_seq
     type: sequence
@@ -158,7 +158,7 @@ plugins:
       - exec: jump pre_seq
       - exec: jump handle_cache
       - exec: prefer_ipv4
-      - matches: "qname $direct-list $china-list $apple-cn"
+      - matches: "qname $direct-list $china-list $apple-cn domain:capoonetwork.com"
         exec: "goto local_seq"
       - matches: "qname $gfw $proxy-list"
         exec: goto remote_seq

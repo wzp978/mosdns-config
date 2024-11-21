@@ -26,11 +26,12 @@ uci add_list dhcp.lan.dhcp_option='6,'"${NET_ADDR}"
 #DHCP option 3: default router or last resort gateway for this interface
 uci add_list dhcp.lan.dhcp_option='3,'"${NET_ADDR}"
 
-uci commit dhcp
-/etc/init.d/dnsmasq restart
-
-# forward from dnsmasq
-# uci set dhcp.@dnsmasq[0].noresolv='1'
-# uci -q delete dhcp.@dnsmasq[0].resolvfile
 # uci commit dhcp
 # /etc/init.d/dnsmasq restart
+
+# forward from dnsmasq
+uci set dhcp.@dnsmasq[0].logfacility='/val/log/dnsmasq.log'
+uci set dhcp.@dnsmasq[0].noresolv='1'
+uci -q delete dhcp.@dnsmasq[0].resolvfile
+uci commit dhcp
+/etc/init.d/dnsmasq restart
