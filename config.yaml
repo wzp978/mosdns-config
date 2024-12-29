@@ -1,7 +1,7 @@
 log:
   # "debug" "info" "warn" "error"
   level: "error"
-  file: "/var/log/mosdns.log"
+  file: "./mosdns.log"
 api:
   http: 0.0.0.0:9091
 include: ["./data.yaml", "./dns.yaml"]
@@ -10,7 +10,7 @@ plugins:
     type: hosts
     args:
       entries:
-        - "mbp.mylocal.com 192.168.1.5"
+        - "mbp.mylocal.com 192.168.31.5"
   - tag: lazy_cache
     type: cache
     args:

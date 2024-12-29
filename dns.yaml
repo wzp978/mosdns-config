@@ -53,4 +53,4 @@ plugins:
       concurrent: 1
       upstreams:
         - tag: dnsmasq
-          addr: 127.0.0.1:54
+          addr: 192.168.31.1
