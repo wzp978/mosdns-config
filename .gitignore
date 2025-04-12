@@ -1,3 +1,4 @@
 mosdns.log
 cache.dump
 rule/*
+mosdns*

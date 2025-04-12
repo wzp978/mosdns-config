@@ -19,17 +19,17 @@ plugins:
       dump_file: "./cache.dump"
       dump_interval: 600
 
-  - tag: "local_ecs"
-    type: "ecs_handler"
-    args:
-      forward: false # 是否转发来自下游的 ecs
-      preset: 218.17.140.162 # 发送预设 ecs
+  # - tag: "local_ecs"
+  #   type: "ecs_handler"
+  #   args:
+  #     forward: false # 是否转发来自下游的 ecs
+  #     preset: 218.17.140.162 # 发送预设 ecs
 
-  - tag: "global_ecs"
-    type: "ecs_handler"
-    args:
-      forward: false # 是否转发来自下游的 ecs
-      preset: 213.130.141.173 # 发送预设 ecs
+  # - tag: "global_ecs"
+  #   type: "ecs_handler"
+  #   args:
+  #     forward: false # 是否转发来自下游的 ecs
+  #     preset: 213.130.141.173 # 发送预设 ecs
 
   - tag: accept_resp
     type: sequence
@@ -118,7 +118,7 @@ plugins:
     type: sequence
     args:
       - exec: "query_summary local dns"
-      - exec: "$local_ecs"
+      # - exec: "$local_ecs"
       - exec: "$forward_local"
       - exec: jump modi_ttl
 
@@ -126,7 +126,7 @@ plugins:
     type: sequence
     args:
       - exec: "query_summary remote dns"
-      - exec: "$global_ecs"
+      # - exec: "$global_ecs"
       - exec: "$forward_remote"
       - exec: jump modi_ttl
 
@@ -158,11 +158,12 @@ plugins:
       - exec: jump pre_seq
       - exec: jump handle_cache
       - exec: prefer_ipv4
-      - matches: "qname $direct-list $china-list $apple-cn domain:capoonetwork.com"
-        exec: "goto local_seq"
-      - matches: "qname $gfw $proxy-list"
-        exec: goto remote_seq
-      - exec: goto fallback_seq
+      - exec: "goto local_seq"
+      # - matches: "qname $direct-list $china-list $apple-cn"
+      #   exec: "goto local_seq"
+      # - matches: "qname $gfw $proxy-list"
+      #   exec: goto remote_seq
+      # - exec: goto fallback_seq
   - tag: udp_server
     type: udp_server
     args:
