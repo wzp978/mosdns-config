@@ -25,27 +25,27 @@ plugins:
         #   addr: tls://120.53.53.53
         #   enable_pipeline: true
 
-  - tag: forward_remote
-    type: forward
-    args:
-      concurrent: 2
-      upstreams:
-        - tag: open_doh
-          addr: https://208.67.222.222/dns-query
-        - tag: open_dot
-          addr: tls://208.67.222.222
-          enable_pipeline: true
-        - tag: open_doh_bak
-          addr: https://208.67.220.220/dns-query
-        - tag: open_dot_bak
-          addr: tls://208.67.220.220
-          enable_pipeline: true
-        - tag: quad_doh
-          addr: https://dns.quad9.net/dns-query
-          dial_addr: 9.9.9.9
-        - tag: quad_doh_bak
-          addr: https://dns.quad9.net/dns-query
-          dial_addr: 149.112.112.112
+  # - tag: forward_remote
+  #   type: forward
+  #   args:
+  #     concurrent: 2
+  #     upstreams:
+  #       - tag: open_doh
+  #         addr: https://208.67.222.222/dns-query
+  #       - tag: open_dot
+  #         addr: tls://208.67.222.222
+  #         enable_pipeline: true
+  #       - tag: open_doh_bak
+  #         addr: https://208.67.220.220/dns-query
+  #       - tag: open_dot_bak
+  #         addr: tls://208.67.220.220
+  #         enable_pipeline: true
+  #       - tag: quad_doh
+  #         addr: https://dns.quad9.net/dns-query
+  #         dial_addr: 9.9.9.9
+  #       - tag: quad_doh_bak
+  #         addr: https://dns.quad9.net/dns-query
+  #         dial_addr: 149.112.112.112
 
   - tag: forward_dnsmasq
     type: forward

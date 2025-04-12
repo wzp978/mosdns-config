@@ -1,4 +1,5 @@
 mosdns.log
 cache.dump
 rule/*
-mosdns*
+mosdns
+mosdns-darwin

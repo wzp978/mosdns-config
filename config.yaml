@@ -61,13 +61,13 @@ plugins:
       - exec: "query_summary from cache"
       - exec: accept
 
-  - tag: handle_qtype65
-    type: sequence
-    args:
-      - matches: "!qtype 65"
-        exec: return
-      - exec: "query_summary handle qtype65"
-      - exec: reject 3
+  # - tag: handle_qtype65
+  #   type: sequence
+  #   args:
+  #     - matches: "!qtype 65"
+  #       exec: return
+  #     - exec: "query_summary handle qtype65"
+  #     - exec: reject 3
 
   - tag: handle_ptr
     type: sequence
@@ -76,8 +76,7 @@ plugins:
         exec: return
       - exec: "query_summary handle ptr"
       - exec: $forward_dnsmasq
-      - exec: jump accept_resp
-      - exec: reject 3
+      - exec: accept
 
   - tag: handle_lan
     type: sequence
@@ -86,16 +85,7 @@ plugins:
         exec: return
       - exec: "query_summary handle lan"
       - exec: $forward_dnsmasq
-      - exec: jump accept_resp
-      - exec: reject 3
-
-  - tag: handle_null_domain
-    type: sequence
-    args:
-      - matches: "!qname keyword::"
-        exec: return
-      - exec: "query_summary handle null domain"
-      - exec: reject 3
+      - exec: accept
 
   # - tag: handle_ad
   #   type: sequence
@@ -108,8 +98,7 @@ plugins:
   - tag: pre_seq
     type: sequence
     args:
-      - exec: jump handle_null_domain
-      - exec: jump handle_qtype65
+      # - exec: jump handle_qtype65
       - exec: jump handle_lan
       - exec: jump handle_ptr
       # - exec: jump handle_ad
@@ -122,34 +111,34 @@ plugins:
       - exec: "$forward_local"
       - exec: jump modi_ttl
 
-  - tag: remote_seq
-    type: sequence
-    args:
-      - exec: "query_summary remote dns"
-      # - exec: "$global_ecs"
-      - exec: "$forward_remote"
-      - exec: jump modi_ttl
+  # - tag: remote_seq
+  #   type: sequence
+  #   args:
+  #     - exec: "query_summary remote dns"
+  #     # - exec: "$global_ecs"
+  #     - exec: "$forward_remote"
+  #     - exec: jump modi_ttl
 
-  - tag: fallback_local
-    type: sequence
-    args:
-      - exec: jump local_seq
-      - matches: "!resp_ip $cnip $lanip"
-        exec: drop_resp
+  # - tag: fallback_local
+  #   type: sequence
+  #   args:
+  #     - exec: jump local_seq
+  #     - matches: "!resp_ip $cnip $lanip"
+  #       exec: drop_resp
 
-  - tag: fallback_dns
-    type: fallback
-    args:
-      primary: fallback_local # 主可执行插件的 tag
-      secondary: remote_seq # 副可执行插件的 tag
-      threshold: 800 # 无响应回滚阈值。单位毫秒。默认 500 。
-      always_standby: true # 副可执行插件始终待命。
+  # - tag: fallback_dns
+  #   type: fallback
+  #   args:
+  #     primary: fallback_local # 主可执行插件的 tag
+  #     secondary: remote_seq # 副可执行插件的 tag
+  #     threshold: 800 # 无响应回滚阈值。单位毫秒。默认 500 。
+  #     always_standby: true # 副可执行插件始终待命。
 
-  - tag: fallback_seq
-    type: sequence
-    args:
-      - exec: "query_summary fallback seq"
-      - exec: $fallback_dns
+  # - tag: fallback_seq
+  #   type: sequence
+  #   args:
+  #     - exec: "query_summary fallback seq"
+  #     - exec: $fallback_dns
 
   - tag: main_sequence
     type: sequence
