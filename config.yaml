@@ -1,6 +1,6 @@
 log:
   # "debug" "info" "warn" "error"
-  level: "info"
+  level: "warn"
   file: "./mosdns.log"
 api:
   http: 0.0.0.0:9091
@@ -19,11 +19,13 @@ plugins:
       dump_file: "./cache.dump"
       dump_interval: 600
 
-  - tag: modi_ttl
+  - tag: accept_resp
     type: sequence
     args:
-      - matches: "has_resp"
-        exec: ttl 3600
+      - matches: "!has_resp"
+        exec: return
+      - exec: ttl 1800
+      - exec: accept
 
   - tag: handle_hosts
     type: sequence
@@ -32,7 +34,7 @@ plugins:
       - matches: "!has_resp"
         exec: return
       - exec: "query_summary from hosts"
-      - exec: accept
+      - exec: jump accept_resp
 
   - tag: handle_cache
     type: sequence
@@ -41,7 +43,7 @@ plugins:
       - matches: "!has_resp"
         exec: return
       - exec: "query_summary from cache"
-      - exec: accept
+      - exec: jump accept_resp
 
   - tag: handle_qtype65
     type: sequence
@@ -72,6 +74,7 @@ plugins:
   - tag: pre_seq
     type: sequence
     args:
+      - exec: jump handle_hosts
       - exec: jump handle_qtype65
       - exec: jump handle_lan
       - exec: jump handle_ptr
@@ -81,20 +84,16 @@ plugins:
     args:
       - exec: "query_summary local dns"
       - exec: "$forward_local"
-      - exec: jump modi_ttl
+      - exec: jump accept_resp
 
   - tag: main_sequence
     type: sequence
     args:
-      - exec: jump handle_hosts
       - exec: jump pre_seq
       - exec: jump handle_cache
       - exec: prefer_ipv4
-      - exec: "jump local_seq"
-      - matches: "has_resp"
-        exec: accept
+      - exec: jump local_seq
       - exec: "query_summary has no resp"
-      - exec: reject
   - tag: udp_server
     type: udp_server
     args:
