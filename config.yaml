@@ -71,6 +71,12 @@ plugins:
       - exec: $forward_dnsmasq
       - exec: accept
 
+  - tag: "ecs_local"
+    type: "ecs_handler"
+    args:
+      forward: false # 是否转发来自下游的 ecs
+      preset: 218.17.140.0 # 发送预设 ecs
+
   - tag: pre_seq
     type: sequence
     args:
@@ -83,6 +89,7 @@ plugins:
     type: sequence
     args:
       - exec: "query_summary local dns"
+      - exec: "$ecs_local"
       - exec: "$forward_local"
       - exec: jump accept_resp
 
